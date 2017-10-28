@@ -1,0 +1,7 @@
+[package]
+name = "hellorust"
+version = "0.1.0"
+authors = ["samir"]
+
+[dependencies]
+rand = "0.3.0"
