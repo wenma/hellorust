@@ -126,6 +126,47 @@ fn main() {
 */
 
 
+/*
+//---------------------------------------------------
+// 切片
+
+fn main() {
+    let a: [u8; 4] = [1, 2, 3, 4];
+
+    let b = &a[..];
+    println!("{:?}", b.len()); 
+
+    let b = &a[1..3];
+    println!("{:?}", b.len()); 
+
+    let b: &str = "hello";
+    println!("{:?}", b.len());
+}
+*/
+
+
+/*
+//---------------------------------------------------
+// 元组
+
+fn main() {
+    let a = (1, "hello");
+    println!("{}", a.1);
+
+    let a: (u8, &str) = (1, "hello");
+    println!("{}", a.1);
+
+    let (a, b, c) = (1, "hello", 1.0);
+    println!("{}{}{}", a, b, c);
+
+    let a = (1, "hello", 1.0);
+    println!("{}", a.0);
+    println!("{}", a.1);
+    println!("{}", a.2);
+
+}
+*/
+
 
 
 
