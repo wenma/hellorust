@@ -163,13 +163,107 @@ fn main() {
     println!("{}", a.0);
     println!("{}", a.1);
     println!("{}", a.2);
+}
+*/
+
+
+/*
+//---------------------------------------------------
+// 流程控制
+
+fn main() {
+    let x = 5;
+
+    if x == 5 {
+        println!("{:?}", x);
+    } else if x == 6 {
+        println!("{:?}", x);
+    } else {
+        println!("error");
+    }
+
+    let y = if x == 5 {10} else {11};
+    println!("{}", y);
+
+    loop {
+        println!("hello");
+        if x == 5 {
+            break;
+        }
+    }
+
+    while true {
+        println!("hello");
+        if x == 5 {
+            break;
+        }
+    }
+
+    for x in 0..5{
+        println!("world");
+    }
+
+    for (index, x) in (0..5).enumerate(){
+        println!("{} {}", index, x);
+    }
+
+    let lines = "hello\nworld".lines();
+    for l in lines {
+        println!("line: {}", l);
+    }
+
+    'outer: for i in 0..10 {
+        'inner: for j in 0..10 {
+            if i % 2 == 0 {
+                println!("{:?}", i);
+                continue 'outer;
+            }
+
+            if j % 2 == 0 {
+                println!("{:?}", j);
+                continue 'inner;
+            }
+        }
+    }
 
 }
 */
 
 
+fn main() {
+    let v = vec![1, 2, 3];
+    println!("{:?}", v[1]);
+
+    let v = vec![0; 10];
+    println!("{:?}", v[1]);
+
+    let i: usize = 1;
+    println!("{:?}", v[i]);
+
+    let mut v: Vec<i32> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+
+    println!("{:?}", v.get(1));
+    println!("{:?}", v.get(100));
+
+    for i in &v {
+        println!("{:?}", i);
+    }
+
+    for i in &v {
+        println!("{:?}", i);
+    }
+
+    match v.get(1) {
+        Some(x) => println!("{}", x),
+        None => println!("not found"),
+    }
 
 
+
+}
 
 
 
