@@ -1,3 +1,13 @@
+/*
+*
+*  马文 （samir_mawen@hotmail.com）
+*
+*  2017-10-28
+*
+*  rust基础学习
+*
+*/
+
 
 /*
 //---------------------------------------------------
@@ -13,7 +23,7 @@ fn main() {
     assert_eq!(y, 7);
     println!("Hello, world!");
 
-    let (a, b): (bool,bool) = (true, false);
+    let (a, b): (bool,bool) = (true, false);  // 解构
     println!("{:?} {:?}", a, b);
 
     let c: &str = "hello world";
@@ -69,6 +79,10 @@ fn main() {
 
 fn add(x: u32, y: u32) -> u32 {
     x + y
+}
+
+fn add(x: u32, y: u32) {          // 没有返回值可不写 ->
+    println!("hello world");
 }
 
 fn main() {
@@ -133,7 +147,7 @@ fn main() {
 fn main() {
     let a: [u8; 4] = [1, 2, 3, 4];
 
-    let b = &a[..];
+    let b = &a[..];            // 取全部元素
     println!("{:?}", b.len()); 
 
     let b = &a[1..3];
@@ -185,7 +199,7 @@ fn main() {
     let y = if x == 5 {10} else {11};
     println!("{}", y);
 
-    loop {
+    loop {                    // 相当于 while true
         println!("hello");
         if x == 5 {
             break;
@@ -199,7 +213,7 @@ fn main() {
         }
     }
 
-    for x in 0..5{
+    for x in 0..5{              //  ..两个点表示范围
         println!("world");
     }
 
@@ -212,7 +226,7 @@ fn main() {
         println!("line: {}", l);
     }
 
-    'outer: for i in 0..10 {
+    'outer: for i in 0..10 {             // 标签，以单引号‘开头
         'inner: for j in 0..10 {
             if i % 2 == 0 {
                 println!("{:?}", i);
@@ -230,8 +244,12 @@ fn main() {
 */
 
 
+/*
+//---------------------------------------------------
+// vector
+
 fn main() {
-    let v = vec![1, 2, 3];
+    let v = vec![1, 2, 3];      // 使用宏创建
     println!("{:?}", v[1]);
 
     let v = vec![0; 10];
@@ -240,7 +258,7 @@ fn main() {
     let i: usize = 1;
     println!("{:?}", v[i]);
 
-    let mut v: Vec<i32> = Vec::new();
+    let mut v: Vec<i32> = Vec::new();    // 标准创建
     v.push(1);
     v.push(2);
     v.push(3);
@@ -248,7 +266,7 @@ fn main() {
     println!("{:?}", v.get(1));
     println!("{:?}", v.get(100));
 
-    for i in &v {
+    for i in &v {                // 遍历，vec需要引用
         println!("{:?}", i);
     }
 
@@ -256,14 +274,132 @@ fn main() {
         println!("{:?}", i);
     }
 
-    match v.get(1) {
+    match v.get(1) {            // get取值，遇到index越界
         Some(x) => println!("{}", x),
         None => println!("not found"),
     }
 
+}
+*/ 
 
+
+//---------------------------------------------------
+// 所有权 & 引用 & 生命周期
+
+#[allow(unused_variables)]       
+
+fn main() {
+    let v = vec![1, 2, 3];
+    let v2 = v;
+
+    println!("{}", v2[1]);
+    // println!("{}", v[1]);    // 编译报错，vec的所有权已经转移到了v2  
+
+    fn take(v: Vec<i32>) {
+        println!("{}", v[0]);
+    }
+
+    let v3 = vec![1, 2, 3];
+    take(v3);
+    // println!("{}", v3[0]);  // 编译报错，在用作函数参数的时候同样发生了所有权移动
+
+    fn take1(v: &Vec<i32>) {
+        println!("{}", v[0]);
+    }
+    let v4: Vec<i32> = vec![1, 2, 3];
+    take1(&v4);
+    println!("{}", v4[0]);    // 使用引用传参，对象不发生所有权的转移
+
+
+    let a1 = 3;
+    let a2 = a1;
+    println!("{} {}", a1, a2);   //正确，基础数据类型直接copy， 不发生所有权的移动
+
+    // 可变引用
+    fn push(v: & mut Vec<i32>){
+        v.push(5)
+    }
+
+    let mut v5: Vec<i32> = vec![1, 2, 3];
+    push(&mut v5);
+
+    let v6 = &mut v5;
+    println!("{:?}", v6[0]);
+
+    // let v7 = &mut v5;      // 编译报错，mut引用在相同作用域下只能引用一次
+    // let v7 = &v5;          // 编译报错，mut引用在相同作用域下仍然存在，非mut引用也是不行
+
+    let v8 = vec![1, 2, 3];
+    let v9 = &v8;
+    let v10 = &v8;
+    let v11 = &v8;            // 正确，只要v8没有存在mut引用，非mut引用可以存在多次
+    println!("{} {} {}", v9[0], v10[0], v11[0]);
+
+
+    let mut x: u8 = 8;
+    {   
+        let y = &mut x;     // y不是mut, 但是引用了一个mut的变量，这里的&有部分c++里面“地址”的意思
+        *y += 1;            // *解引用访问内容，y不可变，但是*y（也就是x）可变
+                            // 这里有点类似C++中const *p 和 * const p的区别
+    }                       
+    println!("{}", x);      // 上面两个语句需要用{}包起来，否则编译报错，这是因为对x的mut引用必须在print之前结束，否则print的时候再次引用会报错
+
+    let mut x: u8 = 8;
+    {  
+        let y = &mut x;
+        // y = &mut 1;          // 编译报错，y不可变， 但是*y可变
+    }
+
+
+    let a: &i32;
+    let b = 1;
+    // a = &b;                 // 编译报错，因为同一作用域以它声明的相反顺序释放资源，b会先于a被释放，再次访问a会出错
+
+
+    // 下面代码块编译报错
+    // life返回一个引用，但是他并不知道这个引用是和b的生命周期一样，还是和p的生命周期一样
+    // 如果和b的一样， 则最后一个print可以正常工作
+    // 如果和p的一样， 则最后一个print不能正常工作（v就变成了一个无效引用）
+    // 这里编译器并不能判断，所以就有了歧义，这需要我们人工标识生命周期
+
+    /*
+    fn life(x: &str, y: &str) -> &str {        
+        return x;
+        // return y;
+    }
+    let a = "hello";
+    let b = "world";
+    let v;
+    {
+        let p = format!("hello {}", b);
+        v = life(b, p.as_str());          
+    }
+    println!("{:?}", v);
+    */
+
+    // 正确， 新的life函数标注了生命周期，指定返回值和x变量的生命周期一样
+    fn life<'a, 'b>(x: &'a str, y: &'b str) -> &'a str {        
+        return x;
+        // return y;
+    }
+    let b = "world";
+    let v;
+    {
+        let p = format!("hello {}", b);
+        v = life(b, p.as_str());          
+    }
+    println!("{:?}", v);
 
 }
+
+
+
+
+
+
+
+
+
 
 
 
