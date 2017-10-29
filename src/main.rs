@@ -9,6 +9,10 @@
 */
 
 
+#[allow(unused_variables)] 
+#[allow(dead_code)]
+#[allow(unused_mut)]
+
 /*
 //---------------------------------------------------
 // 变量
@@ -285,10 +289,7 @@ fn main() {
 
 /*
 //---------------------------------------------------
-// 所有权 & 引用 & 生命周期
-
-#[allow(unused_variables)] 
-#[allow(dead_code)]      
+// 所有权 & 引用 & 生命周期    
 
 fn main() {
     let v = vec![1, 2, 3];
@@ -409,10 +410,6 @@ fn main() {
 //---------------------------------------------------
 // 可变性
 
-#[allow(unused_variables)] 
-#[allow(dead_code)]
-#[allow(unused_mut)]
-
 fn main() {
     fn name(mut x: i32) {
         unimplemented!();
@@ -434,6 +431,97 @@ fn main() {
 }
 */
 
+
+/*
+//---------------------------------------------------
+// 结构体
+
+fn main() {
+    #[derive(Debug)]
+    struct Point {
+        x: i32,
+        y: i32,
+        // mut z: i32   // 字段级别不支持可变性，struct的可变性在他整体 
+    }
+
+    let a = Point {x: 100, y: 200};  //结构体的初始化
+    println!("{:?}", a.x);
+
+    let mut b = Point {x: 100, y: 200};
+    b.x += 5;
+    println!("{:?}", b.x);
+
+    #[derive(Debug)]
+    struct PointRef<'a> {    //内部有两个引用，所以必须手动指定生命周期
+        x: &'a mut i32,      // 引用支持可变性
+        y: &'a mut i32,
+    }
+
+    let mut point1 = Point {x: 1, y: 2};
+    { 
+        let pointref1 = PointRef {x: &mut point1.x, y: &mut point1.y};
+        *pointref1.x += 5;
+        *pointref1.y += 5;
+
+    }
+    println!("{} {}", point1.x, point1.y);
+
+    #[derive(Debug)]
+    struct Point3d {
+        x: i32,
+        y: i32,
+        z: i32
+    }
+
+    let mut point3d = Point3d {x: 0, y: 0, z: 0};
+    point3d = Point3d {x: 1, ..point3d};      //  struct更新语法
+    point3d = Point3d {x: 1, z: 2, ..point3d};
+
+    println!("{} {} {}", point3d.x, point3d.y, point3d.z);
+
+
+    struct Color(i32, i32, i32);    // 元组结构体，没有field name
+    let color = Color(255, 254, 253);
+    println!("{:?}", color.0);
+
+    let Color(r, g, b) = color;
+    println!("{} {} {}", r, g, b);   // 元组结构体的解构
+    println!("{:?}", color.0);     // 解构语法不发生转移语义，color还能正常访问
+
+    struct People {};              // 类单元结构体
+    struct Person;
+
+    let p = People {};
+    let p1 = Person;
+    // let p1 = Person {};  // 编译出错，初始化需要和其声明形式一样
+}
+*/
+
+
+//---------------------------------------------------
+// 枚举
+fn main() {
+    #[derive(Debug)]
+    enum Message {
+        Quit,                  // 类单元结构体
+        Write(String),         // 元组结构体
+        Move {x: i32, y: i32}  // 一般结构体
+    }
+
+    let message: Message = Message::Write("hello world".to_string());
+    let message: Message = Message::Move {x: 10, y: 10};  // 初始化
+
+    // let Message::Move {x, y} = message;    // 编译报错， 不能解构一个enum
+
+    // 含有元组结构体的枚举初始化的时候很想是一个函数调用
+    // 下面是将一个Vec<String>类型转化为Vec<Message>类型
+    let v: Vec<String> = vec!["hello".to_string(), "world".to_string()];
+    let v1: Vec<Message> = v.into_iter().map(Message::Write).collect();
+    for i in &v1 {
+        println!("{:?}", i);
+    }
+
+}
 
 
 
