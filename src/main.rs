@@ -283,10 +283,12 @@ fn main() {
 */ 
 
 
+/*
 //---------------------------------------------------
 // 所有权 & 引用 & 生命周期
 
-#[allow(unused_variables)]       
+#[allow(unused_variables)] 
+#[allow(dead_code)]      
 
 fn main() {
     let v = vec![1, 2, 3];
@@ -390,9 +392,47 @@ fn main() {
     }
     println!("{:?}", v);
 
+
+    // 'static生命周期，局部静态变量
+    let x: &'static str = "hello world";
+    // 全局变量
+    static PI: f32 = 3.1415926;
+
+    let a: fn (a: u8, b: &str) -> &str;  
+    // let a: fn<'a> (a: u8, b: &'a str) -> &'a str;  // 隐式生命周期推断 
+
 }
+*/
 
 
+/*
+//---------------------------------------------------
+// 可变性
+
+#[allow(unused_variables)] 
+#[allow(dead_code)]
+#[allow(unused_mut)]
+
+fn main() {
+    fn name(mut x: i32) {
+        unimplemented!();
+    }
+
+    // fn name1(x: mut i32) { unimplemented!(); }   //编译报错，mut在无引用的情况下应该写在x前面
+
+    #[derive(Debug)]
+    struct Point {    // 结构体的可变性是整体的可变性，与内部x, y无关
+        x: u8,
+        y: u8
+    }
+
+    let mut a = Point {x: 10, y: 20};
+    a.x = 10;
+
+    let b = Point {x: 10, y: 20};
+    // b.x = 10;    //编译报错， b不可变
+}
+*/
 
 
 
