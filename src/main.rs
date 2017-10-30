@@ -498,6 +498,7 @@ fn main() {
 */
 
 
+/*
 //---------------------------------------------------
 // 枚举
 fn main() {
@@ -522,8 +523,240 @@ fn main() {
     }
 
 }
+*/
 
 
+/*
+//---------------------------------------------------
+// match表达式
+
+fn main() {
+    let x = "1";
+    let a = match x {    //  match也是一个表达式，有返回值
+        "1" => 1,
+        _ => 0
+    };
+    println!("{:?}", a);
+
+
+    enum Message {
+        Quit,                  
+        Write(String),       
+        Move {x: i32, y: i32}
+    }
+
+    let msg: Message = Message::Move {x: 10, y: 10};
+    match msg {
+        Message::Move{x, y} => println!("{} {}", x, y),   //  匹配枚举， 可以结构
+        _ => println!("Error..."),  
+    }
+
+
+    let a = 5;
+    match a {
+        x => println!("{:?}", x),
+        // _ => println!("6")      //  这一行永远不会执行到，  
+    }
+
+    match a {
+        1 | 2 | 3 | 4 | 5 => println!("Got it"),   // 多重模式的匹配
+        _ => println!("Error..."),
+    }
+
+    match a {
+        1 ... 5 => println!("Got it"),     // 三个点号表示匹配一个范围
+        _ => println!("Error..."),
+    }
+
+    let a = ' ';
+    match a {
+        'a' ... 'z' => println!("Got it"),
+        _ => println!("Error...")
+    }
+    
+    #[derive(Debug)]
+    struct Point {
+        x: i32,
+        y: i32
+    }
+
+    let point: Point = Point {x: 10, y: 10};
+    match point {
+        Point {x, y} => println!("{} {}", x, y)    // 模式匹配中可以解构一个结构体
+    }
+
+    match point {
+        Point {x: x1, y: y1} => println!("{} {}", x1, y1)   // 可以在解构的时候起别名
+    }
+
+    match point {
+        Point {x, ..} => println!("{}", x)   // 可以使用双点号表示省略某些值
+    }
+
+    match point {
+        Point {y, ..} => println!("{}", y)   // 可以使用双点号表示省略某些值
+    }
+
+
+    let (x, _, z) = (1, 2, 3);   // 使用下划线忽略绑定 
+
+    #[derive(Debug)]
+    enum Works {
+        Item(i32, i32, i32),
+        Quit,
+    }
+
+    let w = Works::Item(5, 6, 7);
+
+    match w {
+        Works::Item(..) => println!("Got it"),   //使用双点号忽略全部解构的值
+        Works::Quit => println!("quit")
+    }
+
+    let x = 5;
+    match x {
+        ref y => println!("y is a ref of {}", y)   // match中使用ref关键字来引用
+    }
+
+    let mut x = 5;
+    match x {
+        ref mut y => println!("y is a mut ref of {}", y)   // 可变引用
+    }
+
+    let x = 5;
+    match x {
+        e @ 1 ... 5 => println!("{:?}", e),     // 用@符号绑定变量到e
+        _ => println!("Error...")
+    }
+
+    match x {
+        e @ 1 ... 2 | e @ 3 ... 5 => println!("{:?}", e),   // @ 和 | 一起使用， 确保每一部分都要有绑定
+        _ => println!("Error...")
+    }
+
+    let w = Works::Item(5, 6, 7);
+    match w {
+        Works::Item(y, ..) if y > 5 => println!("y is grater than 5"),   // match 内部使用if
+        Works::Item(..) => println!("ingore..."),
+        Works::Quit => println!("quit..."),
+    }
+
+    let x = 5;
+    let y = false;
+    match x {
+        4 | 5 if y => println!("Got it"),    // 使用|的时候，优先级是 （4 | 5）if y
+        _ => println!("Error...")
+    }
+
+}
+*/
+
+
+/*
+//---------------------------------------------------
+// 方法（类成员函数 & 静态函数）
+
+fn main() {
+    #[derive(Debug)]
+    struct Circle {
+        x: f32,
+        y: f32,
+        r: f32
+    }
+ 
+    impl Circle {               // 给struct添加一个成员方法
+        fn print(&self){
+            println!("{:?}", self.x);
+            println!("{:?}", self.y);
+            println!("{:?}", self.r);
+        }
+
+        fn print2(&self){
+            println!("{:?}", self.x);
+            println!("{:?}", self.y);
+            println!("{:?}", self.r);
+        }
+
+        fn staticfn(x: i32, y: i32){    // 静态方法
+            println!("{} {}", x, y);
+        }
+    }
+
+
+    let c = Circle {x: 10.0, y: 10.0, r: 5.0};
+    c.print();         //调用
+    Circle::staticfn(5, 6);    // 静态方法的调用
+
+    impl Circle {
+        fn set_x(&mut self, x: f32) -> &mut Circle {
+            self.x = x;
+            self
+        }
+
+        fn set_y(&mut self, y: f32) -> &mut Circle {
+            self.y = y;
+            self
+        }
+        
+    }
+
+    let mut c = Circle {x: 0.0, y: 0.0, r: 5.0};
+    c.set_x(10.0).set_y(10.0).print();
+
+}
+*/
+
+
+//---------------------------------------------------
+// 字符串
+
+fn main() {
+    let a: &'static str = "hello world";   // 默认类型是 &‘static str
+
+    let mut s: String = "hello".to_string();   // 可变长字符串
+    s.push_str(", world");
+    println!("{:?}", s);
+
+    let b = &s;    // String 可以强制转化为 &str
+    println!("{:?}", b);
+
+    let a = "你好";
+    // println!("{:?}", a[0]);   // 编译报错, 因为字符是utf8编码的，
+
+    for i in a.as_bytes() {
+        println!("{:?}", i);    // 打印字节（6个字节）
+    }
+
+    for i in a.chars() {
+        println!("{:?}", i);    // 打印字符, 这才是我们想要的遍历字符串方法
+    }
+
+    let x = a.chars().nth(0);
+    match x {
+        Some(a) => println!("{:?}", a),        // 访问字符串中的字符
+        None => println!("Error..."),
+    }
+
+    let x = "hello world";
+    let y: &str = &x[0..5];              // 获取字符串切片
+    println!("{:?}", y); 
+
+    let x = "你好";
+    // let y: &str = &x[0..2];    // 编译错误，切片是字节偏移，不是字符偏移
+
+    let a = "hello";
+    let b = "world";
+    // let c = a + b;    // 编译错误， 两个&str不能连接
+
+    let c = "你好".to_string();
+    let d = c + a;
+    println!("{:?}", d);
+
+    let c = "hello".to_string();
+    let e = "rust".to_string();
+    let f = c + &e;           // String 后面需要连接 &str
+    println!("{:?}", f);      // &String 可以自动转化为 &str
+}
 
 
 
