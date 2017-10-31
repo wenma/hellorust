@@ -1060,4 +1060,12 @@ fn main() {
             println!("We added 10. `mut_value`: {:?}", m);
         },
     }
+
+
+
+    let a = &1;
+    let b = &2;
+    let c = &3;
+
+    println!("{:?}", *a + *b + *c);
 }
