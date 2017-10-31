@@ -707,6 +707,7 @@ fn main() {
 */
 
 
+/*
 //---------------------------------------------------
 // 字符串
 
@@ -757,11 +758,259 @@ fn main() {
     let f = c + &e;           // String 后面需要连接 &str
     println!("{:?}", f);      // &String 可以自动转化为 &str
 }
+*/ 
+
+
+/*
+//---------------------------------------------------
+// 泛型
+
+fn main() {
+
+    let a: Option<i32> = Option::Some(5);  
+    // let a: Option<i32> = Option::Some(5.0);  // 编译错误, 前后类型需要一致
+    
+    fn add1<T>(x: T, y: T) {     //泛型函数
+        println!("hello");
+    }
+
+    #[derive(Debug)]
+    struct Point<T> {     // 结构体泛型
+        x: T,
+        y: T,
+    }
+
+    
+    let b = Point {x: 1.0, y: 2.0};
+    let mut a = Point {x: 10, y: 20};
+
+    impl<T> Point<T> {              
+        fn swap(&mut self) {       // 内部函数不用写<T>
+            std::mem::swap(&mut self.x,  &mut self.y);
+        }
+    }
+
+    a.swap();
+    println!("{} {}", a.x, a.y);
+
+    let c: Vec<i32> = Vec::new();    // 在编译器推断不出来类型的时候, 手动指定数据类型
+    let c = Vec::<i32>::new();       // 另外一种写法
+
+
+}
+*/
+
+/*
+//---------------------------------------------------
+// traits
+
+fn main() {
+
+    #[derive(Debug)]
+    struct Circle {
+        x: f64,
+        y: f64,
+        r: f64,
+    }
+
+    trait HasArea {      // 给Circle添加特性(类似于java中的接口)
+        fn area(&self) -> f64;
+    }
+
+    impl HasArea for Circle {
+        fn area(&self) -> f64 {
+            std::f64::consts::PI * (self.r * self.r)
+        }
+    }
+
+    let a = Circle {x: 10.0, y: 10.0, r: 10.0};
+    println!("{:?}", a.area());
+
+    // fn print_area<T>(x: T){        // 编译报错, 编译器无法推断T是那种类型, 所以就不知道area方法有没有
+    //     print!("area is {}", x.area());
+    // }
+
+    fn print_area<T: HasArea>(x: T){        // 手动指定为所有实现了HasArea trait的类型
+        print!("area is {}", x.area());
+    }
+
+    
+    struct Point<T> {
+        x: T,
+        y: T,
+    }
+
+    impl<T: std::cmp::PartialEq> Point<T> {    // 必须指定, 否则编译器不知道
+        fn equal(&self) -> bool {
+            self.x == self.y
+        }
+    }
+
+    let x = Point {x: 10, y: 10};
+    x.equal();
+
+
+    // 比如说写一个简单的相加函数 (fuck, 语法这么复杂) 
+    // 这里体现了一个rust的哲学:  尽可能的把坑消灭在编译阶段, 所以一些含糊不清的, 编译期间不能推断类型的泛型都被枪毙了
+    fn add<T: std::ops::Add>(x: T, y: T) -> <T as std::ops::Add>::Output {     //泛型函数
+        x + y
+    }
+
+    println!("{}", add(1, 2));
+
+    // traits可以给任意类型添加, 这种姿势就像是给类型新加一个父类或接口
+
+    trait NewTrait {
+        fn print(&self);
+    }
+
+    impl NewTrait for i32 {
+        fn print(&self) {
+            println!("{:?}", self);
+        }
+    }
+
+    1.print();   // 叼炸天, 可以给基本类型扩展一个方法
 
 
 
+    fn foo<T: Clone + std::fmt::Debug>(x: T){     // 多个绑定, 同时要实现Clone和Debug两个trait, 直接用+号相加
+        x.clone();
+        println!("{:?}", x);   // 打印也需要指定(Debug), 否则编译不知道打印什么类型
+    }
+
+    // 上面函数也可以用where子句改写一下
+    fn foo1<T>(x: T) where T: Clone + std::fmt::Debug
+    {    
+        x.clone();
+        println!("{:?}", x);
+    }
 
 
+    struct X;
+
+    trait Default {
+        fn print(&self);
+
+        fn inner_print(&self) {
+            self.print();
+        }
+    }
+
+    impl Default for X {
+        fn print(&self) {
+            println!("got it!");
+        }
+    }
+
+    let a: X = X;
+    a.print();
+    a.inner_print();    // inner_print不用在impl块中实现, 在trait中已经有了默认处理
+
+    trait Foo {
+        fn foo(&self);
+    }
+
+    trait Foo1: Foo {     // trait的继承
+        fn foo1(&self);
+    }
+
+    struct Y;
+
+    impl Foo for Y{
+        fn foo(&self) {
+            print!("i am foo\n");
+        }
+    }
+
+    impl Foo1 for Y {      // 实现这个的时候, Foo必须实现
+        fn foo1(&self) {
+            print!("i am foo1\n");  
+        }
+    }
+
+    let y = Y;
+    y.foo();
+    y.foo1();  
 
 
+    #[derive(Debug)]      // 让编译器自己实现Debug这个标准库里面的trait,   这个trait的功能是能够打印对象
+    struct PointAuto {
+        x: i32,
+        y: i32
+    }  
 
+    print!("{:?}", PointAuto {x: 10, y: 10});
+
+
+    #[derive(Debug)]
+    struct Z;
+    println!("{:?}", Z);
+
+}
+*/
+
+
+/*
+//---------------------------------------------------
+// Drop trait & if let & while let
+
+fn main() {
+    struct HasDrop;
+
+    impl Drop for HasDrop {
+        fn drop(&mut self){     // 这里要求是一个 &mut类型
+            println!("obj is dropped!");
+        }
+    }
+
+    {
+        let x = HasDrop;      // 当x被销毁时会运行drop方法
+    }
+
+    
+    let option = Some(5);
+    fn foo(x: i32) {
+        println!("{:?}", x);
+    }
+
+    // 第一种写法
+    match option {
+        Some(x) => { foo(x) },
+        None => {},
+    }
+
+    // 第二种写法
+    if option.is_some() {
+        let x = option.unwrap();
+        foo(x);
+    }
+
+    // 第三种写法
+    // 相当于: if 后面跟一个let表达式,如果解构成功就执行下面的语句,  可以这么理解, 但是if let是一个关键词
+    if let Some(x) = option {      
+        foo(x);
+    }
+
+    // 第一种写法
+    let mut v = vec![1, 2, 3, 4, 5, 6];
+    loop {
+        match v.pop() {
+            Some(x) => println!("{:?}", x),
+            None => break,
+        }
+    }
+
+    //第二种写法
+    let mut v = vec![1, 2, 3, 4, 5, 6];
+    while let Some(x) = v.pop() {      // while let表示匹配多次
+        println!("{:?}", x);
+    }
+
+}
+*/
+
+
+fn main() {
+    
+}
