@@ -1055,7 +1055,77 @@ fn main() {
 }
 */
 
+/*
+//---------------------------------------------------
+// trait对象
 
 fn main() {
-    
+    trait Msg {
+        fn convert(&self) -> String;
+    }
+
+    impl Msg for i32 {
+        fn convert(&self) -> String {
+            format!("Msg is {}", *self)
+        }
+    }
+
+    impl Msg for String {
+        fn convert(&self) -> String {
+            format!("Msg is {}", *self)
+        }
+    }
+
+    let x: i32 = 5;
+    println!("{}", 5.convert());
+
+    let y: String = String::from("hello");
+    println!("{}", y.convert());
+
+    let z = Msg::convert(&x);
+    println!("{}", z);
+
+    fn do_something(x: &Msg) -> String {    // 传父类指针
+        x.convert()
+    }
+
+    let a = do_something(&6 as &Msg);
+    println!("{}", a);
 }
+*/
+
+
+fn main() {
+    let x = |x: i32| x + 1;    // 匿名函数
+    println!("{:?}", x(1));
+
+    let y = || {     // 没有参数
+        1 + 1;
+        2 + 2        // {} 可以写多行
+    };
+    println!("{:?}", y());
+
+    let a = 5;
+    let b = |x| x + a;
+
+    println!("{:?}", b(1));
+
+    // let c = &mut a;    // 编译错误，上面的闭包b， 实际上是引用了a（&a）, 再次mut引用会出错
+    let c = &a;
+
+    let d = vec![1,2,3,4];
+    let e = || d;           //  这里d已经发生了move语义
+    // println!("{:?}", d);    // 编译错误，这里访问d就会出错
+
+
+}
+
+
+
+
+
+
+
+
+
+
