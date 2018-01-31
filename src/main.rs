@@ -1095,6 +1095,10 @@ fn main() {
 */
 
 
+
+//---------------------------------------------------
+// 闭包（未完待续）
+
 fn main() {
     let x = |x: i32| x + 1;    // 匿名函数
     println!("{:?}", x(1));
@@ -1117,8 +1121,36 @@ fn main() {
     let e = || d;           //  这里d已经发生了move语义
     // println!("{:?}", d);    // 编译错误，这里访问d就会出错
 
+    println!("------------------------------------------------------");
+
+    let m = 1;
+    let mut a: u8 = 5;
+    let c = m + a;
+    let d = &mut a;
+    
+    let mut a: u8 = 5;
+    let c = move |x: u8| x + a;
+    let d = &mut a;
+
+
+
+    
+
 
 }
+
+
+
+/*
+mod service;
+
+
+fn main() {
+    println!("{}", service::add(1, 2))
+}
+*/
+
+
 
 
 
