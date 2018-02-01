@@ -1095,7 +1095,7 @@ fn main() {
 */
 
 
-
+/*
 //---------------------------------------------------
 // 闭包（未完待续）
 
@@ -1129,26 +1129,26 @@ fn main() {
     let d = &mut a;
     
     let mut a: u8 = 5;
-    let c = move |x: u8| x + a;
+    let c = move |x: u8| x + a;   // move 是
     let d = &mut a;
 
-
-
-    
-
-
-}
-
+} */
 
 
 /*
-mod service;
+//---------------------------------------------------
+// 模块
 
+mod service;
 
 fn main() {
     println!("{}", service::add(1, 2))
 }
 */
+
+fn main () {
+    unimplemented!();
+}
 
 
 
