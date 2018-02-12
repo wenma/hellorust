@@ -1146,9 +1146,51 @@ fn main() {
 }
 */
 
-fn main () {
-    unimplemented!();
+
+
+extern crate reqwest;
+#[macro_use] extern crate serde_derive;
+
+#[allow(unused_imports)]
+use std::io::Read;
+
+#[allow(unused_imports)]
+use reqwest::{Error, Response};
+use reqwest::header::ContentType;
+
+
+fn get_nodes_info(uri: &str) -> Result<String, Error> {
+    let url: String = format!("{}/_cat/nodes?v", uri);   // {} {:?} {:#?}都不一样. {}是普通字符串输出. {:?}输出的是对象本身, 但是也只有基础类型或者实现了fmt这个trait的结构体., {:#?}可以输出带有debug这个trait的结构体.
+
+    let client = reqwest::Client::new();
+
+    #[derive(Deserialize)]
+    struct Cell {
+        host: String,
+        ip: String,
+        heap.percent: String,
+
+    }
+
+    let res = client.get(&url)
+                    .header(ContentType::json())
+                    .send()?
+                    .json();
+
+    println!("{:?}", res);
+
+    Ok("123".to_string())
 }
+
+fn consistency_check(url: &str, auth: (&str, &str)) {
+    let data = get_nodes_info(url);
+}
+
+
+fn main(){
+    consistency_check("http://l-qesaasmasteres1.ops.cn2.qunar.com:11701", ("", ""));
+}
+
 
 
 
