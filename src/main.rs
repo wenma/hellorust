@@ -1197,7 +1197,7 @@ fn consistency_check(url: &str, auth: (&str, &str)) {
 
 
 fn main(){
-    consistency_check("http://l-qesaasmasteres1.ops.cn2.qunar.com:11701", ("", ""));
+    consistency_check("", ("", ""));
 }
 
 
