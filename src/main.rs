@@ -1152,6 +1152,7 @@ fn main() {
 #[macro_use] 
 extern crate serde_derive;
 extern crate reqwest;
+extern crate serde_json;
 
 #[allow(unused_imports)]
 use std::io::Read;
@@ -1167,31 +1168,25 @@ fn get_nodes_info(uri: &str) -> Result<String, Error> {
     let client = reqwest::Client::new();
 
     #[derive(Deserialize, Debug)]
-    struct AllNode {
+    struct Name {
         name: String
     }
 
     let url: String = format!("{}/_cat/nodes?v", uri);
-    let res: Vec<AllNode> = client.get(&url).header(ContentType::json()).send()?.json()?;
+    let res: Vec<Name> = client.get(&url).header(ContentType::json()).send()?.json()?;
 
     // println!("{:?}", res);
-
-
-    #[derive(Deserialize, Debug)]
-    struct Node {
-        // nodes: String
-    }
 
     #[derive(Deserialize, Debug)]
     struct Nodes {
         cluster_name: String,
-        nodes: Node
+        nodes: std::collections::HashMap<String, Name>
     }
 
     let url: String = format!("{}/_nodes/stats", uri);
     let res: Nodes = client.get(&url).header(ContentType::json()).send()?.json()?;
 
-    println!("{:?}", res);
+    println!("{:?}", res.nodes);
 
     Ok("123".to_string())
 }
