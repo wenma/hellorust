@@ -1154,52 +1154,81 @@ extern crate serde_derive;
 extern crate reqwest;
 extern crate serde_json;
 
-#[allow(unused_imports)]
-use std::io::Read;
-
-#[allow(unused_imports)]
-use reqwest::{Error, Response};
+use reqwest::Error;
 use reqwest::header::ContentType;
 
 
-fn get_nodes_info(uri: &str) -> Result<String, Error> {
-   // {} {:?} {:#?}都不一样. {}是普通字符串输出. {:?}输出的是对象本身, 但是也只有基础类型或者实现了fmt这个trait的结构体., {:#?}可以输出带有debug这个trait的结构体.
-
-    let client = reqwest::Client::new();
-
-    #[derive(Deserialize, Debug)]
-    struct Name {
-        name: String
-    }
-
-    let url: String = format!("{}/_cat/nodes?v", uri);
-    let res: Vec<Name> = client.get(&url).header(ContentType::json()).send()?.json()?;
-
-    // println!("{:?}", res);
-
-    #[derive(Deserialize, Debug)]
-    struct Nodes {
-        cluster_name: String,
-        nodes: std::collections::HashMap<String, Name>
-    }
-
-    let url: String = format!("{}/_nodes/stats", uri);
-    let res: Nodes = client.get(&url).header(ContentType::json()).send()?.json()?;
-
-    println!("{:?}", res.nodes);
-
-    Ok("123".to_string())
+#[derive(Deserialize, Debug)]
+struct Name {
+    name: String
 }
 
-fn consistency_check(url: &str, auth: (&str, &str)) {
-    let data = get_nodes_info(url);
+#[derive(Deserialize, Debug)]
+struct Nodes {
+    cluster_name: String,
+    nodes: std::collections::HashMap<String, Name>
+}
+
+
+fn get_all_nodes(uri: &str, auth: (&str, &str)) -> Result<Vec<String>, Error> {
+    let client = reqwest::Client::new();
+    let url: String = format!("{}/_cat/nodes?v", uri);
+    let res: Vec<Name> = client.get(&url).header(ContentType::json()).basic_auth(auth.0, Some(auth.1)).send()?.json()?;
+    let mut nodes: Vec<String> = Vec::new();
+    for name in &res {
+        nodes.push((&name.name).to_string())
+    }
+    Ok(nodes)
+}
+
+
+fn get_current_nodes(uri: &str, auth: (&str, &str)) -> Result<Vec<String>, Error> {
+    let client = reqwest::Client::new();
+    let url: String = format!("{}/_nodes/stats", uri);
+    let res: Nodes = client.get(&url).header(ContentType::json()).basic_auth(auth.0, Some(auth.1)).send()?.json()?;
+
+    let mut nodes: Vec<String> = Vec::new();
+    for (_id, name) in &res.nodes {
+        nodes.push((&name.name).to_string());
+    }
+    Ok(nodes)
+}
+
+
+fn consistency_check(url: &str, auth: (&str, &str)) -> Result<Vec<String>, Error> {
+    let all_nodes = match get_all_nodes(url, auth) {
+        Ok(nodes) => nodes,
+        Err(_) => panic!()
+    };
+
+    let current_nodes = match get_current_nodes(url, auth) {
+        Ok(nodes) => nodes,
+        Err(_) => panic!()
+    };
+
+    let mut ret: Vec<String> = Vec::new();
+    for j in &all_nodes {
+        let mut flag = false;
+        for k in &current_nodes {
+            if j == k {
+                flag = true;
+                break;
+            }
+        }
+
+        if !flag {
+            ret.push(j.to_string());
+        }
+    }
+
+    Ok(ret)
 }
 
 
 fn main(){
-    consistency_check("", ("", ""));
+    let ret = consistency_check("", ("", "")).unwrap();
+    println!("{:?}", ret);
 }
-
 
 
 
