@@ -1314,6 +1314,7 @@ fn main() {
 */
 
 
+/*
 // ---------------字符串逆序输出----------------------------------
 fn main() {
     let origin: String = "hello world".into();
@@ -1324,7 +1325,51 @@ fn main() {
     let _: Vec<_> = res.iter().map(|c| target.push(*c)).collect();
     
     println!("{:?}", target);
+}*/
+
+
+
+// -----------  统计纯英文文本中每一个字母出现的次数 ------------------------
+use std::fs::File;
+use std::io::BufReader;
+use std::io::prelude::*;
+use std::collections::HashMap;
+
+fn process() -> std::io::Result<()> { 
+
+    let file = File::open("/Users/samir/Desktop/Children of the Dawn.txt")?;
+    let reader = BufReader::new(file);
+    let mut counter_map: HashMap<char, u64> = HashMap::new();
+    
+    let mut lines = reader.lines().map(|l| l.unwrap());
+    loop {
+        
+        let line: Option<String> = lines.next();
+        if line.is_none() {
+            break;
+        }
+
+        for c in line.unwrap().chars() {
+            let c = c.to_lowercase().collect::<Vec<_>>()[0];
+            if c.is_alphabetic() {
+                counter_map.entry(c).or_insert(0u64);
+                *(counter_map.get_mut(&c).unwrap()) += 1;
+            }
+        }
+    }
+
+    for (key, val) in counter_map.iter() {
+        println!("{} : {}", key, val);
+    }
+    
+    Ok(())
 }
+
+
+fn main() {
+    let _ = process().unwrap();
+}
+
 
 
 
