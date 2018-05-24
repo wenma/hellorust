@@ -1148,7 +1148,7 @@ fn main() {
 
 
 
-
+/*
 #[macro_use] 
 extern crate serde_derive;
 extern crate reqwest;
@@ -1229,6 +1229,133 @@ fn main(){
     let ret = consistency_check("", ("", "")).unwrap();
     println!("{:?}", ret);
 }
+*/
+
+
+/*
+// -------------------------------------- “==重载”  ----------------------------
+fn main() {
+
+    #[derive(Debug)]
+    struct Name {
+        name: String
+    }
+
+    impl PartialEq for Name {
+        fn eq(&self, other: &Name) -> bool {
+            true
+        }
+    }
+
+
+    let a = Name {name: "hello".to_string()};
+
+    let b = Name {name: "world".to_string()};
+
+    println!("{:?}", a == b);
+    
+}
+*/
+
+/*
+fn main() {
+
+    // panic的写法
+    // panic!("this is a {} {message}", "fancy", message = "message");
+
+    #[derive(Debug)]
+    enum Test<T, E> {
+        MM(T),
+        WW(E),
+    }
+
+    let a: Test<&'static str, i32> = Test::MM("22");
+
+    println!("{:?}", a);
+    
+}*/
+
+
+
+/*
+fn main() {
+
+    #[derive(Debug)]
+    struct MyErr {
+        desc: String
+    }
+
+    impl From<(&'static str, &'static str)> for MyErr {
+        fn from((kind, detail): (&'static str, &'static str)) -> MyErr {
+            println!("should be run here !");
+            MyErr {desc: format!("{} : {}", kind, detail)}
+        }
+    }
+    
+    fn test() -> Result<(), MyErr> {
+        return Err(::std::convert::From::from(("TestErr", "this is a error.")))
+    }
+
+    match test() {
+        Ok(_) => {}
+        Err(e) => println!("{:?}", e.desc)
+    }
+
+
+
+    let a = "hello";
+
+    for i in a.as_bytes().to_vec() {
+        println!("{}", i);
+    }
+
+
+}
+*/
+
+
+// ---------------字符串逆序输出----------------------------------
+fn main() {
+    let origin: String = "hello world".into();
+    let mut res: Vec<char> = origin.chars().collect();
+    res.reverse();
+
+    let mut target: String = String::new();
+    let _: Vec<_> = res.iter().map(|c| target.push(*c)).collect();
+    
+    println!("{:?}", target);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
